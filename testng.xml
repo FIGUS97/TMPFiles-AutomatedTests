@@ -1,0 +1,30 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name = "Suite">
+    <parameter name="connectedTests" value="true"/>
+    <parameter name="fileSize" value = "2"/>
+    <parameter name="address" value=""/>
+    <parameter name="hashMD5" value=""/>
+    <parameter name="providedAddress" value=""/>
+    <parameter name="dummyFilePath" value=""/>
+    <parameter name="downloadNumber" value="3"/>
+    <test name = "UploadTest" enabled="true">
+        <classes>
+            <class name = "FileUploadTest">
+            </class>
+        </classes>
+    </test>
+    <test name="DownloadTest" enabled="true">
+        <classes>
+            <class name="FileDownloadTest">
+            </class>
+        </classes>
+    </test>
+    <parameter name="filepath" value="cele.png"/>
+    <test name="CheckSum Generator" enabled="false">
+        <classes>
+            <class name="Util.TestFile">
+            </class>
+        </classes>
+    </test>
+</suite>
