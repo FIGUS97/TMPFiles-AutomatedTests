@@ -17,6 +17,9 @@
     <test name="DownloadTest" enabled="true">
         <classes>
             <class name="FileDownloadTest">
+                <methods>
+                    <!-- <exclude name="multipleDownloadsExactLimit"/> -->
+                </methods>
             </class>
         </classes>
     </test>

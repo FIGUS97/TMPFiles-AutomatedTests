@@ -1,10 +1,12 @@
 package Pages;
 
 import Util.DriverManager;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.testng.Assert;
 
 public class DownloadPage {
     private final WebDriver driver;
@@ -35,7 +37,7 @@ public class DownloadPage {
         PageFactory.initElements(driver, this);
     }
 
-    public String getDownloadLink() {
+    public String getDownloadLink() throws NoSuchElementException {
         return downloadButton.getAttribute("href");
     }
 

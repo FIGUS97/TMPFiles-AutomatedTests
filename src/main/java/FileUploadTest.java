@@ -1,7 +1,9 @@
 
 import Pages.UploadPage;
 import Util.DriverManager;
+import Util.LoggerClass;
 import Util.TestFile;
+import org.testng.Assert;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterTest;
@@ -10,7 +12,6 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 public class FileUploadTest {
 
@@ -20,11 +21,10 @@ public class FileUploadTest {
     @Parameters({"fileSize"})
     @BeforeTest
     public void setUpTest(int fileSize) {
-        java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.SEVERE);
-
-        System.out.println("File Size: " + fileSize + " MB.");
-
         uploadPage = new UploadPage("chrome");
+
+        System.out.println("\nFile Download test beginning.");
+        System.out.println("File Size: " + fileSize + " MB.");
         try {
              testFile = new TestFile(fileSize);
         } catch (Exception e) {
@@ -33,17 +33,45 @@ public class FileUploadTest {
         }
     }
 
+    @Parameters({"downloadNumber", "timeLimit"})
     @Test
-    public void singleUpload(ITestContext context) throws IOException {
+    public void singleUpload(String downloadNumber, String timeLimit, ITestContext context) {
+        ISuite iSuiteContext = context.getSuite();
         uploadPage.openUploadPage();
-        uploadPage.fileChoose(testFile.getFile().getCanonicalPath());
+
+        try {
+            uploadPage.fileChoose(testFile.getFile().getCanonicalPath());
+        } catch (IOException exc) {
+            LoggerClass.logError("[ SingleUpload ] Wrong filepath!");
+            Assert.fail();
+            return;
+        }
+        uploadPage.setDownloadLimit(downloadNumber);
+        uploadPage.setTimeLimitInMinutes(timeLimit);
+        testFile.setTimeLimitInMinutes(Integer.parseInt(timeLimit));
         uploadPage.clickUploadButton();
         System.out.println("MD5: " + testFile.getMd5sum());
-        ISuite iSuiteContext = context.getSuite();
+
         iSuiteContext.setAttribute("md5", testFile.getMd5sum());
         iSuiteContext.setAttribute("providedAddress", DriverManager.getDriver().getCurrentUrl());
+
         System.out.println("DL page from upload: " + DriverManager.getDriver().getCurrentUrl());
-        //uploadPage.closePage();
+    }
+
+    @Test
+    public void uploadAboveMbLimit() {
+        uploadPage.openUploadPage();
+
+        try {
+            uploadPage.fileChoose(testFile.getFile().getCanonicalPath());
+        } catch (IOException exc) {
+            LoggerClass.logError("[ SingleUpload ] Wrong filepath!");
+            Assert.fail();
+            return;
+        }
+
+        uploadPage.clickUploadButton();
+        
     }
 
     @Parameters({"connectedTests"})

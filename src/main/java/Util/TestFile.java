@@ -7,7 +7,6 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,11 +19,14 @@ public class TestFile {
     private int sizeInMB;
     private File fileObj;
     private String md5sum;
+    private long uploadTimestamp;
+    private int timeLimitInMinutes;
 
     public TestFile(int sizeMB) throws Exception{
-        filename = "dummyfile"+System.currentTimeMillis() + ".txt";
+        filename = "dummyfile" + System.currentTimeMillis() + ".txt";
         fileObj = new File(Paths.get(".", filename).toUri());
         sizeInMB = sizeMB;
+        uploadTimestamp = System.currentTimeMillis();
         if(fileObj.createNewFile())
         {
             System.out.println("New file created: " + filename);
@@ -35,9 +37,7 @@ public class TestFile {
         }
     }
 
-    public TestFile() {
-        System.out.println("File object created for file download test.");
-    }
+    public TestFile() { }
 
     private void writeToFile(int sizeInMB, String path) {
         try {
@@ -54,13 +54,12 @@ public class TestFile {
     @Parameters({"filepath"})
     @Test
     private void generateMD5sum(String filepath) {
-        MessageDigest messageDigest = null;
+        MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("MD5");
             InputStream is = Files.newInputStream(Paths.get(".", filepath));
             DigestInputStream dis = new DigestInputStream(is, messageDigest);
             md5sum = byteToHex(messageDigest.digest());
-            //System.out.println(byteToHex(messageDigest.digest()));
         } catch (NoSuchAlgorithmException e) {
             System.out.println("Hashing algorithm went wrong.");
         } catch (IOException e) {
@@ -78,9 +77,8 @@ public class TestFile {
 
     public Boolean testMD5sum (String providedMD5) {
         generateMD5sum(filename);
-        System.out.println("Comparing provided: " + providedMD5 + "\nto actual: " + md5sum);
-        if(providedMD5.equals(md5sum)) return true;
-        return false;
+        System.out.println("Comparing provided hash: " + providedMD5 + "\nto actual: " + md5sum);
+        return providedMD5.equals(md5sum);
     }
 
     public void downloadFile(String downloadURL) {
@@ -89,7 +87,6 @@ public class TestFile {
             URL url = new URL(downloadURL);
             ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
             FileOutputStream fileOutputStream = new FileOutputStream(filePath);
-            FileChannel fileChannel = fileOutputStream.getChannel();
             fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             this.filename = filePath;
             this.fileObj = new File(filePath);
@@ -107,4 +104,10 @@ public class TestFile {
     public String getMd5sum() { return md5sum; }
 
     public File getFile() {  return fileObj; }
+
+    public long getUploadTimestamp() {  return uploadTimestamp; }
+
+    public int getTimeLimitInMinutes() {  return timeLimitInMinutes; }
+
+    public void setTimeLimitInMinutes(int timeLimitInMinutes) {  this.timeLimitInMinutes = timeLimitInMinutes; }
 }

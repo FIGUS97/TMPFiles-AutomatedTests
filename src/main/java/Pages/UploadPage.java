@@ -12,10 +12,10 @@ public class UploadPage {
     @FindBy(xpath="/html[1]/body[1]/div[1]/section[1]/form[1]/div[1]/input[1]")
     WebElement fileInput;
 
-    @FindBy(name="max_views")
+    @FindBy(xpath="/html[1]/body[1]/div[1]/section[1]/form[1]/div[2]/input[1]")
     WebElement maxViewsInput;
 
-    @FindBy(name="max_time")
+    @FindBy(xpath="/html[1]/body[1]/div[1]/section[1]/form[1]/div[3]/input[1]")
     WebElement maxTimeInput;
 
     @FindBy(name="upload")
@@ -39,10 +39,11 @@ public class UploadPage {
     }
 
     public void setDownloadLimit(String downloadLimit){
+        maxViewsInput.clear();
         maxViewsInput.sendKeys(downloadLimit);
     }
 
-    public void timeLimitTextBox(String timeLimit){
+    public void setTimeLimitInMinutes(String timeLimit){
         maxTimeInput.sendKeys(timeLimit);
     }
 
