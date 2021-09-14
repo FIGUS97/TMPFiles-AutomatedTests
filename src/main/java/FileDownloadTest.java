@@ -1,4 +1,5 @@
 import Pages.DownloadPage;
+import Util.DriverManager;
 import Util.LoggerClass;
 import Util.TestFile;
 import org.openqa.selenium.NoSuchElementException;
@@ -37,8 +38,8 @@ public class FileDownloadTest {
             downloadPage.setAddress(address);
         }
 
-        System.out.println("Address: " + downloadPage.getAddress());
-        System.out.println("MD5hash: " + providedMD5);
+        LoggerClass.logInfo("Address: " + downloadPage.getAddress());
+        LoggerClass.logInfo("MD5hash: " + providedMD5);
     }
 
     @Test (priority = 3)
@@ -49,12 +50,10 @@ public class FileDownloadTest {
         try {
             file.downloadFile(downloadPage.getDownloadLink());
             Assert.assertTrue(file.testMD5sum(providedMD5));
-            System.out.println("Download Test Passed. Hash comparison test passed.");
+            LoggerClass.logInfo("Download Test Passed. Hash comparison test passed.");
         } catch (AssertionError err) {
-            System.out.println("Download Test Failed. Hash comparison test failed.");
+            LoggerClass.logInfo("Download Test Failed. Hash comparison test failed.");
             Assert.fail();
-        } catch (NoSuchElementException ex) {
-
         }
     }
 
@@ -127,8 +126,10 @@ public class FileDownloadTest {
                 Files.delete(Paths.get((String) context.getSuite().getAttribute("dummyFilePath")));
             }
             file.getFile().deleteOnExit();
+            DriverManager.closeDriver();
         } catch (NullPointerException | IOException ex) {
-            System.out.println("Files to delete not found.");
+            LoggerClass.logError("Files to delete not found.");
+            DriverManager.closeDriver();
         }
     }
 }

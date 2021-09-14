@@ -8,9 +8,13 @@
     <parameter name="providedAddress" value=""/>
     <parameter name="dummyFilePath" value=""/>
     <parameter name="downloadNumber" value="3"/>
+    <parameter name="timeLimit" value="5"/>
     <test name = "UploadTest" enabled="true">
         <classes>
             <class name = "FileUploadTest">
+                <methods>
+                    <exclude name="uploadAboveMbLimit" />
+                </methods>
             </class>
         </classes>
     </test>
@@ -19,6 +23,7 @@
             <class name="FileDownloadTest">
                 <methods>
                     <!-- <exclude name="multipleDownloadsExactLimit"/> -->
+                    <include name="singleDownload" />
                 </methods>
             </class>
         </classes>

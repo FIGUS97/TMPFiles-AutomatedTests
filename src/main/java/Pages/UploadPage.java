@@ -44,6 +44,7 @@ public class UploadPage {
     }
 
     public void setTimeLimitInMinutes(String timeLimit){
+        maxTimeInput.clear();
         maxTimeInput.sendKeys(timeLimit);
     }
 

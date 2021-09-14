@@ -3,6 +3,7 @@ import Pages.UploadPage;
 import Util.DriverManager;
 import Util.LoggerClass;
 import Util.TestFile;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ISuite;
 import org.testng.ITestContext;
@@ -21,21 +22,22 @@ public class FileUploadTest {
     @Parameters({"fileSize"})
     @BeforeTest
     public void setUpTest(int fileSize) {
+
         uploadPage = new UploadPage("chrome");
 
-        System.out.println("\nFile Download test beginning.");
-        System.out.println("File Size: " + fileSize + " MB.");
+        LoggerClass.logInfo("\nFile Upload test beginning.");
+        LoggerClass.logInfo("File Size: " + fileSize + " MB.");
         try {
              testFile = new TestFile(fileSize);
         } catch (Exception e) {
-            System.out.println("File creation failed.\n" + e.getMessage() + "\n" + e.getCause());
+            LoggerClass.logError("File creation failed.\n" + e.getMessage() + "\n" + e.getCause());
             e.printStackTrace();
         }
     }
 
     @Parameters({"downloadNumber", "timeLimit"})
     @Test
-    public void singleUpload(String downloadNumber, String timeLimit, ITestContext context) {
+    public void singleUpload(String downloadNumber, String timeLimit, ITestContext context) throws InterruptedException {
         ISuite iSuiteContext = context.getSuite();
         uploadPage.openUploadPage();
 
@@ -49,6 +51,8 @@ public class FileUploadTest {
         uploadPage.setDownloadLimit(downloadNumber);
         uploadPage.setTimeLimitInMinutes(timeLimit);
         testFile.setTimeLimitInMinutes(Integer.parseInt(timeLimit));
+
+        Thread.sleep(5000);
         uploadPage.clickUploadButton();
         System.out.println("MD5: " + testFile.getMd5sum());
 
@@ -71,6 +75,8 @@ public class FileUploadTest {
         }
 
         uploadPage.clickUploadButton();
+
+        // To Be Finished
         
     }
 
@@ -81,7 +87,10 @@ public class FileUploadTest {
         if(connectedTests) {
             iSuiteContext.setAttribute("dummyFilePath", testFile.getFile().getPath());
             System.out.println("File 1 path: " + iSuiteContext.getAttribute("dummyFilePath"));
+        } else {
+            DriverManager.closeDriver();
+            testFile.getFile().delete();
         }
-        else testFile.getFile().delete();
+
     }
 }
